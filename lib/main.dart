@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shoppinglist/widgets/bottom_sheet.dart';
-import 'package:shoppinglist/widgets/custom_input.dart';
+import 'package:shoppinglist/widgets/modal_bottom_sheet.dart';
+import 'package:shoppinglist/widgets/predicted_value.dart';
 import 'package:shoppinglist/widgets/shopping_list_item.dart';
 
 import 'models/list_item.dart';
@@ -54,8 +54,8 @@ class _HomePageState extends State<HomePage> {
   removeListItem(index) {
     setState(() {
       shoppingList.removeAt(index);
-      showSnackBar("Item deletado com sucesso.", Colors.green, context);
     });
+    showSnackBar("Item deletado com sucesso.", Colors.green, context);
     sumListItems();
   }
 
@@ -72,8 +72,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   showSnackBar(String msg, Color color, BuildContext ctx) {
-    ScaffoldMessenger.of(ctx)
-        .showSnackBar(SnackBar(backgroundColor: color, content: Text(msg)));
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+      backgroundColor: color,
+      content: Text(msg),
+      duration: const Duration(milliseconds: 500),
+    ));
   }
 
   @override
@@ -116,46 +119,21 @@ class _HomePageState extends State<HomePage> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               )),
-          Flexible(
-            flex: 1,
-            child: ListView.builder(
-                itemCount: shoppingList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ShoppingListItem(
-                    shoppingList: shoppingList,
-                    index: index,
-                    removeAt: removeListItem(index),
-                  );
-                }),
+          ShoppingListItem(
+            shoppingList: shoppingList,
+            format: format,
+            removeAt: (index) => removeListItem(index),
           ),
-          Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.all(16),
-            height: 80,
-            child: shoppingList.isNotEmpty
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                        const Text(
-                          "Valor previsto",
-                          style: TextStyle(
-                              color: Color(0xffFCA12A),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
-                        Text(
-                          format.format(total),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )
-                      ])
-                : Container(),
-          )
+          shoppingList.isNotEmpty
+              ? PredictedValue(
+                  total: total,
+                  format: format,
+                )
+              : Container()
         ]),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {modalBottomSheet(context, addListItem)},
+        onPressed: () async => {modalBottomSheet(context, addListItem)},
         backgroundColor: const Color(0xffFCA12A),
         child: const Icon(Icons.add, color: Colors.white),
       ),

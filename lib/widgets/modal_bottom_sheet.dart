@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'custom_input.dart';
 
 Future modalBottomSheet(BuildContext context, Function addListItem) {
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final nameTextController = TextEditingController();
   final priceTextController = TextEditingController();
 
-  final List<FocusNode> _focusNodes = [
+  final List<FocusNode> focusNodes = [
     FocusNode(),
     FocusNode(),
   ];
@@ -51,7 +51,7 @@ Future modalBottomSheet(BuildContext context, Function addListItem) {
             padding: const EdgeInsets.all(16),
             height: 250,
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.min,
@@ -59,18 +59,14 @@ Future modalBottomSheet(BuildContext context, Function addListItem) {
                   customTextInput(
                       validateNameInput,
                       "nome do item",
-                      _focusNodes[0],
+                      focusNodes[0],
                       TextInputType.emailAddress,
                       nameTextController),
-                  customTextInput(
-                      validatePriceInput,
-                      "preço do item",
-                      _focusNodes[1],
-                      TextInputType.number,
-                      priceTextController),
+                  customTextInput(validatePriceInput, "preço do item",
+                      focusNodes[1], TextInputType.number, priceTextController),
                   ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           addListItem(
                               nameTextController.text,
                               double.parse(priceTextController.text
@@ -81,7 +77,7 @@ Future modalBottomSheet(BuildContext context, Function addListItem) {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                          primary: const Color(0xffFCA12A),
+                          backgroundColor: const Color(0xffFCA12A),
                           elevation: 5,
                           fixedSize: const Size(double.maxFinite, 50)),
                       child: const Text(
